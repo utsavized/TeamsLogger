@@ -29,11 +29,11 @@ namespace TeamsLogger
         }
 
         /// <summary>
-        /// 
+        /// Logs simple message with it's severity
         /// </summary>
-        /// <param name="severity"></param>
-        /// <param name="message"></param>
-        /// <param name="color"></param>
+        /// <param name="severity">Severity of log message</param>
+        /// <param name="message">Log message</param>
+        /// <param name="color">Optional: Hex code of color of the message card</param>
         public void LogMessage(LogSeverity severity, string message, string color = null)
         {
             var jsonMsg = GetSerializedMessage(severity, message, color);
@@ -41,12 +41,11 @@ namespace TeamsLogger
         }
 
         /// <summary>
-        /// 
+        /// Logs simple message with it's severity asynchronously
         /// </summary>
-        /// <param name="severity"></param>
-        /// <param name="message"></param>
-        /// <param name="color"></param>
-        /// <returns></returns>
+        /// <param name="severity">Severity of log message</param>
+        /// <param name="message">Log message</param>
+        /// <param name="color">Optional: Hex code of color of the message card</param>
         public async Task LogMessageAsync(LogSeverity severity, string message, string color = null)
         {
             var jsonMsg = GetSerializedMessage(severity, message, color);
@@ -54,10 +53,10 @@ namespace TeamsLogger
         }
 
         /// <summary>
-        /// 
+        /// Starts a running log
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="summary"></param>
+        /// <param name="title">Title of the running log card</param>
+        /// <param name="summary">Optional: Summary of log card</param>
         public void BeginRunningLog(string title, string summary = null)
         {
             _card = new O365ConnectorCard(_moduleName, title, summary);
@@ -65,8 +64,9 @@ namespace TeamsLogger
         }
 
         /// <summary>
+        /// Posts running log to Teams
         /// </summary>
-        /// <param name="colorHexCode">Color hex code without #, for eg. CCFFE4</param>
+        /// <param name="colorHexCode">Optional: Color hex code of the running card (without #, for eg. CCFFE4)</param>
         public void PostRunningLog(string colorHexCode = null)
         {
             if (string.IsNullOrEmpty(colorHexCode) && _loggerConfiguration.AutomaticallySetColor)
@@ -83,8 +83,9 @@ namespace TeamsLogger
         }
 
         /// <summary>
+        /// Posts running log to Teams asynchoronously
         /// </summary>
-        /// <param name="colorHexCode">Color hex code without #, for eg. CCFFE4</param>
+        /// <param name="colorHexCode">Optional: Color hex code of the running card (without #, for eg. CCFFE4)</param>
         public async void PostRunningLogAsync(string colorHexCode = null)
         {
             if (string.IsNullOrEmpty(colorHexCode) && _loggerConfiguration.AutomaticallySetColor)
@@ -101,16 +102,16 @@ namespace TeamsLogger
         }
 
         /// <summary>
-        /// 
+        /// Add new section to running log card
         /// </summary>
-        /// <param name="severity"></param>
-        /// <param name="title"></param>
-        /// <param name="text"></param>
-        /// <param name="activityTitle"></param>
-        /// <param name="activitySubtitle"></param>
-        /// <param name="activityText"></param>
-        /// <param name="markdown"></param>
-        public void AddNewSection(LogSeverity? severity = null, string title = null, string text = null, string activityTitle = null, string activitySubtitle = null, string activityText = null, bool? markdown = null)
+        /// <param name="severity">Optional: severity of the section</param>
+        /// <param name="title">Optional: Title of the section</param>
+        /// <param name="text">Optional: Summary of the section</param>
+        /// <param name="eventTitle">Optional: Section event title</param>
+        /// <param name="eventSubtitle">Optional: Section event subtitle</param>
+        /// <param name="eventSummary">Optional: Section event summary</param>
+        /// <param name="markdown">If any text has markdown</param>
+        public void AddNewSection(LogSeverity? severity = null, string title = null, string text = null, string eventTitle = null, string eventSubtitle = null, string eventSummary = null, bool? markdown = null)
         {
             if (severity.HasValue && severity.Value == LogSeverity.Error)
             {
@@ -121,8 +122,8 @@ namespace TeamsLogger
                 _hasWarning = true;
             }
 
-            var section = new O365ConnectorCardSection(title, text, activityTitle, activitySubtitle, activityText, null, null, markdown);
-            if (!_card.Sections.Any())
+            var section = new O365ConnectorCardSection(title, text, eventTitle, eventSubtitle, eventSummary, null, null, markdown);
+            if (_card.Sections == null || !_card.Sections.Any())
             {
                 _card.Sections = new List<O365ConnectorCardSection> { section };
             }
@@ -135,16 +136,22 @@ namespace TeamsLogger
         }
 
         /// <summary>
-        /// 
+        /// Add link button
         /// </summary>
-        /// <param name="linkButtonText"></param>
-        /// <param name="linkTargetUri"></param>
+        /// <param name="linkButtonText">Button text</param>
+        /// <param name="linkTargetUri">Target Uri</param>
         public void AddLink(string linkButtonText, string linkTargetUri)
         {
             var link = new O365ConnectorCardOpenUri("OpenUri", linkButtonText, null, new List<O365ConnectorCardOpenUriTarget>
             {
                 new O365ConnectorCardOpenUriTarget("default", linkTargetUri)
             });
+
+            if (_currentSection == null)
+            {
+                _currentSection = new O365ConnectorCardSection();
+                _card.Sections = new List<O365ConnectorCardSection> { _currentSection };
+            }
 
             if (!_currentSection.PotentialAction.Any())
             {
@@ -157,11 +164,11 @@ namespace TeamsLogger
         }
 
         /// <summary>
-        /// 
+        /// Add an event within a sub section
         /// </summary>
-        /// <param name="severity"></param>
-        /// <param name="log"></param>
-        public void AddSubSectionActivityWithSeverity(LogSeverity severity, string log)
+        /// <param name="severity">Severity of event</param>
+        /// <param name="log">Event text</param>
+        public void AddSubSectionEvent(LogSeverity severity, string log)
         {
             if (severity == LogSeverity.Error)
             {
@@ -173,6 +180,13 @@ namespace TeamsLogger
             }
 
             var fact = new O365ConnectorCardFact(severity.ToString(), log);
+
+            if (_currentSection == null)
+            {
+                _currentSection = new O365ConnectorCardSection();
+                _card.Sections = new List<O365ConnectorCardSection> { _currentSection };
+            }
+
             if (!_currentSection.Facts.Any())
             {
                 _currentSection.Facts = new List<O365ConnectorCardFact> { fact };
