@@ -147,7 +147,7 @@ namespace TeamsLogger
         public void CreateNewExceptionMessageCard(Exception exception, string linkToLog = null, string logButtonText = null)
         {
             _hasException = true;
-            var section = new O365ConnectorCardSection($"{exception.GetType()} - {exception.Message}", null, null, null, $"{exception.StackTrace}{Environment.NewLine}", null, null, true);
+            var section = new O365ConnectorCardSection($"{exception.GetType()} - {exception.Message}", null, null, null, $"```{Environment.NewLine}{exception.StackTrace}{Environment.NewLine}```", null, null, true);
             _currentSection = section;
 
             if (!string.IsNullOrEmpty(linkToLog))
