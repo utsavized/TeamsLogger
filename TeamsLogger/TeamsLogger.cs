@@ -73,7 +73,7 @@ namespace TeamsLogger
             {
                 if (_hasException)
                     _card.ThemeColor = Defaults.ErrorColor;
-                else if (_hasWarning)
+                else if (_hasWarning && !_hasException)
                     _card.ThemeColor = Defaults.WarningColor;
             }
             else
@@ -95,7 +95,7 @@ namespace TeamsLogger
             {
                 if (_hasException)
                     _card.ThemeColor = Defaults.ErrorColor;
-                else if (_hasWarning)
+                else if (_hasWarning && !_hasException)
                     _card.ThemeColor = Defaults.WarningColor;
             }
             _card.ThemeColor = colorHexCode;
@@ -120,7 +120,7 @@ namespace TeamsLogger
             {
                 _hasException = true;
             }
-            if (severity.HasValue && severity.Value == LogSeverity.Warn)
+            if (severity.HasValue && severity.Value == LogSeverity.Warn && !_hasException)
             {
                 _hasWarning = true;
             }
