@@ -75,6 +75,8 @@ namespace TeamsLogger
                     _card.ThemeColor = Defaults.ErrorColor;
                 else if (_hasWarning && !_hasException)
                     _card.ThemeColor = Defaults.WarningColor;
+                else
+                    _card.ThemeColor = Defaults.SuccessColor;
             }
             else
             {
@@ -215,7 +217,9 @@ namespace TeamsLogger
 
             if (_card.Sections == null || !_card.Sections.Any())
             {
-                _card.Sections = new List<O365ConnectorCardSection> { new O365ConnectorCardSection(formattedLog) };
+                var section = new O365ConnectorCardSection(formattedLog);
+                _card.Sections = new List<O365ConnectorCardSection> { section };
+                _currentSection = section;
             }
             else
             {
@@ -244,7 +248,7 @@ namespace TeamsLogger
                         throw new ArgumentOutOfRangeException(nameof(severity), severity, null);
                 }
             }
-            var teamsMsg = new TeamsMessage { Text = $"[{_moduleName}][{severity}] {message}" , ThemeColor = color };
+            var teamsMsg = new TeamsMessage { Text = $"[{_moduleName}][{severity}] {message}", ThemeColor = color };
             return JsonConvert.SerializeObject(teamsMsg);
         }
 
