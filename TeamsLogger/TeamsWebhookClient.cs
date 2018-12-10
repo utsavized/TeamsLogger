@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Text;
 using System.Threading.Tasks;
-using RestSharp;
 
 namespace TeamsLogger
 {
@@ -21,23 +21,32 @@ namespace TeamsLogger
 
         public void Post(string jsonPayload)
         {
-            var client = new RestClient(_restUri);
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Accept", "application/json");
-            request.AddJsonBody(jsonPayload);
-            client.Execute(request);
-
+            var request = GetRequest(jsonPayload);
+            var response = request.GetResponse();
         }
 
         public async Task PostAsync(string jsonPayload)
         {
-            var client = new RestClient(_restUri);
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Accept", "application/json");
-            request.AddJsonBody(jsonPayload);
-            await client.ExecutePostTaskAsync(request, new CancellationTokenSource().Token);
+            var request = GetRequest(jsonPayload);
+            await request.GetResponseAsync();
+        }
+
+        private HttpWebRequest GetRequest(string jsonPayload)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(_restUri);
+            request.Accept = "application/json";
+            request.ContentType = "application/json";
+            request.Method = "POST";
+
+            var encoding = new ASCIIEncoding();
+            var bytes = encoding.GetBytes(jsonPayload);
+
+            using (var newStream = request.GetRequestStream())
+            {
+                newStream.Write(bytes, 0, bytes.Length);
+            }
+
+            return request;
         }
     }
 }

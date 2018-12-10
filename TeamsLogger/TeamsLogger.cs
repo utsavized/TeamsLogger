@@ -76,7 +76,10 @@ namespace TeamsLogger
                 else if (_hasWarning)
                     _card.ThemeColor = Defaults.WarningColor;
             }
-            _card.ThemeColor = colorHexCode;
+            else
+            {
+                _card.ThemeColor = colorHexCode;
+            }
 
             var jsonPayload = JsonConvert.SerializeObject(_card);
             _webhookClient.Post(jsonPayload);
@@ -111,7 +114,7 @@ namespace TeamsLogger
         /// <param name="eventSubtitle">Optional: Section event subtitle</param>
         /// <param name="eventSummary">Optional: Section event summary</param>
         /// <param name="markdown">If any text has markdown</param>
-        public void AddNewSection(LogSeverity? severity = null, string title = null, string text = null, string eventTitle = null, string eventSubtitle = null, string eventSummary = null, bool? markdown = null)
+        public void CreateNewMessageCard(LogSeverity? severity = null, string title = null, string text = null, string eventTitle = null, string eventSubtitle = null, string eventSummary = null, bool? markdown = null)
         {
             if (severity.HasValue && severity.Value == LogSeverity.Error)
             {
@@ -136,11 +139,41 @@ namespace TeamsLogger
         }
 
         /// <summary>
+        /// Add new exception section to running log card
+        /// </summary>
+        /// <param name="exception">Exception</param>
+        /// <param name="linkToLog">Uri to log file</param>
+        /// <param name="logButtonText">Name of link button</param>
+        public void CreateNewExceptionMessageCard(Exception exception, string linkToLog = null, string logButtonText = null)
+        {
+            _hasException = true;
+            var section = new O365ConnectorCardSection($"{exception.GetType()} - {exception.Message}", null, null, null, $"{exception.StackTrace}{Environment.NewLine}", null, null, true);
+            _currentSection = section;
+
+            if (!string.IsNullOrEmpty(linkToLog))
+            {
+                AddLinkToCurrentMessageCard(linkToLog, logButtonText ?? "Log");
+            }
+
+            if (_card.Sections == null || !_card.Sections.Any())
+            {
+                _card.Sections = new List<O365ConnectorCardSection> { _currentSection };
+            }
+            else
+            {
+                _card.Sections.Add(_currentSection);
+            }
+
+            _currentSection = new O365ConnectorCardSection();
+            _card.Sections.Add(_currentSection);
+        }
+
+        /// <summary>
         /// Add link button
         /// </summary>
         /// <param name="linkButtonText">Button text</param>
         /// <param name="linkTargetUri">Target Uri</param>
-        public void AddLink(string linkButtonText, string linkTargetUri)
+        public void AddLinkToCurrentMessageCard(string linkTargetUri, string linkButtonText)
         {
             var link = new O365ConnectorCardOpenUri("OpenUri", linkButtonText, null, new List<O365ConnectorCardOpenUriTarget>
             {
@@ -153,7 +186,7 @@ namespace TeamsLogger
                 _card.Sections = new List<O365ConnectorCardSection> { _currentSection };
             }
 
-            if (!_currentSection.PotentialAction.Any())
+            if (_currentSection.PotentialAction == null || !_currentSection.PotentialAction.Any())
             {
                 _currentSection.PotentialAction = new List<O365ConnectorCardActionBase> { link };
             }
@@ -168,8 +201,9 @@ namespace TeamsLogger
         /// </summary>
         /// <param name="severity">Severity of event</param>
         /// <param name="log">Event text</param>
-        public void AddSubSectionEvent(LogSeverity severity, string log)
+        public void AddLogToCurrentMessageCard(LogSeverity severity, string log)
         {
+            var formattedLog = $"<span style=\"color:#{GetColorCode(severity)}\"><strong>{severity}</strong></span> {log}";
             if (severity == LogSeverity.Error)
             {
                 _hasException = true;
@@ -179,21 +213,15 @@ namespace TeamsLogger
                 _hasWarning = true;
             }
 
-            var fact = new O365ConnectorCardFact(severity.ToString(), log);
-
-            if (_currentSection == null)
+            if (_card.Sections == null || !_card.Sections.Any())
             {
-                _currentSection = new O365ConnectorCardSection();
-                _card.Sections = new List<O365ConnectorCardSection> { _currentSection };
-            }
-
-            if (!_currentSection.Facts.Any())
-            {
-                _currentSection.Facts = new List<O365ConnectorCardFact> { fact };
+                _card.Sections = new List<O365ConnectorCardSection> { new O365ConnectorCardSection(formattedLog) };
             }
             else
             {
-                _currentSection.Facts.Add(fact);
+                _currentSection.Title = string.IsNullOrEmpty(_currentSection.Title)
+                    ? formattedLog
+                    : _currentSection.Title + "<br />" + formattedLog;
             }
         }
 
@@ -216,8 +244,23 @@ namespace TeamsLogger
                         throw new ArgumentOutOfRangeException(nameof(severity), severity, null);
                 }
             }
-            var teamsMsg = new TeamsMessage { Text = $"[{_moduleName}][{severity}] {message}", ThemeColor = color };
+            var teamsMsg = new TeamsMessage { Text = $"[{_moduleName}][{severity}] {message}" , ThemeColor = color };
             return JsonConvert.SerializeObject(teamsMsg);
+        }
+
+        private string GetColorCode(LogSeverity severity)
+        {
+            switch (severity)
+            {
+                case LogSeverity.Info:
+                    return Defaults.InfoColor;
+                case LogSeverity.Warn:
+                    return Defaults.WarningColor;
+                case LogSeverity.Error:
+                    return Defaults.ErrorColor;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(severity), severity, null);
+            }
         }
     }
 }
