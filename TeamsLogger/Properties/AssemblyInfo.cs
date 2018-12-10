@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("TeamsLogger")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Logging library that helps log cards into Microsoft Teams")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Utsav Pandey")]
 [assembly: AssemblyProduct("TeamsLogger")]
 [assembly: AssemblyCopyright("Copyright © Utsav Pandey 2018")]
 [assembly: AssemblyTrademark("")]
