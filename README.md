@@ -13,7 +13,7 @@ var logger = new TeamsLogger.TeamsLogger(
 logger.LogMessage(LogSeverity.Info, "This is a simple log");
 ```
 
-## IoC Container
+## IoC Container logger registration
 
 ```csharp
 // This example uses Autofac
@@ -29,3 +29,15 @@ builder.Register(ctx =>
 
 logger.LogMessage(LogSeverity.Info, "This is a simple log");
 ```
+
+# Logging Concept
+
+##Simple Log
+
+```csharp
+public void LogMessage(LogSeverity severity, string message, string color = null);
+public Task LogMessageAsync(LogSeverity severity, string message, string color = null);
+```
+
+These create simple log messages and post to Teams right away. Each log message represents an individual message card.
+
