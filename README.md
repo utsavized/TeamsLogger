@@ -30,6 +30,10 @@ builder.Register(ctx =>
 logger.LogMessage(LogSeverity.Info, "This is a simple log");
 ```
 
+## Configuration
+
+There is only one setting `new LoggerConfiguration { AutomaticallySetColor = true }` which dictates if message cards are automcatically colored based on severity of the message logged. User can always override this setting by supplying their own hex code.
+
 # Logging Concepts
 
 ## Simple Logs
