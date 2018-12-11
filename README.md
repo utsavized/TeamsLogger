@@ -30,6 +30,10 @@ builder.Register(ctx =>
 logger.LogMessage(LogSeverity.Info, "This is a simple log");
 ```
 
+## Configuration
+
+There is only one setting `new LoggerConfiguration { AutomaticallySetColor = true }` which dictates if message cards are automcatically colored based on severity of the message logged. User can always override this setting by supplying their own hex code.
+
 # Logging Concepts
 
 ## Simple Logs
@@ -42,9 +46,7 @@ public void LogMessage(LogSeverity severity, string message, string color = null
 public Task LogMessageAsync(LogSeverity severity, string message, string color = null);
 ```
 
-![Simple Log](https://github.com/utsavized/TeamsLogger/blob/master/docs/simplelog.PNG)
-
-
+![Simple Log](https://github.com/utsavized/TeamsLogger/blob/7d0af9e674e01bd155b9cff8e8e48b76c1f04263/docs/simplelog.PNG)
 
 ## Running Logs
 
@@ -76,6 +78,8 @@ logger.AddLogToCurrentMessageCard(LogSeverity.Warn, "Not so good event happened"
 
 _logger.PostRunningLog(); // Log is posted here, can use async
 ```
+
+![Simple Log](https://github.com/utsavized/TeamsLogger/blob/7d0af9e674e01bd155b9cff8e8e48b76c1f04263/docs/runninglog.PNG)
 
 
 
