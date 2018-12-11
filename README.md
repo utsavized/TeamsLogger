@@ -1,6 +1,6 @@
 # Teams Logger
 
-Rich logging for Microsoft Teams
+Rich logging for Microsoft Teams using HTTP POST to Teams Incoming Webhook Connector
 
 # Usage
 ## Basic logger creation
