@@ -37,9 +37,14 @@ logger.LogMessage(LogSeverity.Info, "This is a simple log");
 These create simple log messages and post to Teams right away. Each log message represents an individual message card.
 
 ```csharp
+// Color will set the color of the message card
 public void LogMessage(LogSeverity severity, string message, string color = null);
 public Task LogMessageAsync(LogSeverity severity, string message, string color = null);
 ```
+
+![Simple Log](https://github.com/utsavized/TeamsLogger/blob/master/docs/simplelog.PNG)
+
+
 
 ## Running Logs
 
