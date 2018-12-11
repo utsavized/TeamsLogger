@@ -44,8 +44,6 @@ public Task LogMessageAsync(LogSeverity severity, string message, string color =
 
 ![Simple Log](https://github.com/utsavized/TeamsLogger/blob/7d0af9e674e01bd155b9cff8e8e48b76c1f04263/docs/simplelog.PNG)
 
-
-
 ## Running Logs
 
 Running logs help create rich log cards by aggregating multiple logs serially within your app, and eventually logging them all at once as a single Teams message card. Note: This only works if your app isn't distributing its logging. For distributed case, use simple logging.
@@ -76,6 +74,8 @@ logger.AddLogToCurrentMessageCard(LogSeverity.Warn, "Not so good event happened"
 
 _logger.PostRunningLog(); // Log is posted here, can use async
 ```
+
+![Simple Log](https://github.com/utsavized/TeamsLogger/blob/7d0af9e674e01bd155b9cff8e8e48b76c1f04263/docs/runninglog.PNG)
 
 
 
