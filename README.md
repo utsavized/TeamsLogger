@@ -30,14 +30,47 @@ builder.Register(ctx =>
 logger.LogMessage(LogSeverity.Info, "This is a simple log");
 ```
 
-# Logging Concept
+# Logging Concepts
 
-##Simple Log
+## Simple Logs
+
+These create simple log messages and post to Teams right away. Each log message represents an individual message card.
 
 ```csharp
 public void LogMessage(LogSeverity severity, string message, string color = null);
 public Task LogMessageAsync(LogSeverity severity, string message, string color = null);
 ```
 
-These create simple log messages and post to Teams right away. Each log message represents an individual message card.
+## Running Logs
+
+Running logs help create rich log cards by aggregating multiple logs serially within your app, and eventually logging them all at once as a single Teams message card. Note: This only works if your app isn't distributing its logging. For distributed case, use simple logging.
+
+For example:
+
+```csharp
+var logger = new TeamsLogger.TeamsLogger(
+	new TeamsWebhookClient("Your teams channel Uri"),
+        new LoggerConfiguration { AutomaticallySetColor = true },
+        "SomeModule");
+	
+// App begins running log aggregation
+logger.BeginRunningLog("Begin logging");
+
+// Logs app events
+logger.AddLogToCurrentMessageCard(LogSeverity.Info, "Some event happened");
+logger.AddLogToCurrentMessageCard(LogSeverity.Warn, "Not so good event happened");
+logger.AddLogToCurrentMessageCard(LogSeverity.Error, "Bad event happened");
+
+// some exception occurred, and was caught here
+// Full log was uploaded to some url
+logger.CreateNewExceptionMessageCard(e, "log url here", "Log");
+
+// App continues
+logger.AddLogToCurrentMessageCard(LogSeverity.Info, "Some event happened");
+logger.AddLogToCurrentMessageCard(LogSeverity.Warn, "Not so good event happened");
+
+_logger.PostRunningLog(); // Log is posted here, can use async
+```
+
+
 
