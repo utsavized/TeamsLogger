@@ -85,11 +85,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Defaults.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="Models\LoggerConfiguration.cs" />
     <Compile Include="Models\LogSeverity.cs" />
     <Compile Include="Models\TeamsMessage.cs" />
     <Compile Include="TeamsWebhookClient.cs" />
-    <Compile Include="TeamsLogger.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

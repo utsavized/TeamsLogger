@@ -7,7 +7,7 @@ namespace TeamsLogger.Console
     {
         static void Main(string[] args)
         {
-            var logger = new TeamsLogger(
+            var logger = new Logger(
                 new TeamsWebhookClient("https://outlook.office.com/webhook/71a6c967-860c-4188-828c-e6baba9bc51c@72f988bf-86f1-41af-91ab-2d7cd011db47/IncomingWebhook/55e584c493fa4c1f828c3056521df94d/ec7ccc0b-51c9-4fbc-b2a1-936cee91b855"),
                 new LoggerConfiguration { AutomaticallySetColor = true },
                 "SomeModule");

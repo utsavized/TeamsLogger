@@ -9,7 +9,7 @@ namespace TeamsLogger.Tests
         [TestMethod]
         public void CardIsCreated()
         {
-            var logger = new TeamsLogger(
+            var logger = new Logger(
                 new TeamsWebhookClient("http://yourcompany.com/teams/channel/randomId"),
                 new LoggerConfiguration { AutomaticallySetColor = true },
                 "ModuleName");

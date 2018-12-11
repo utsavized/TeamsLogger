@@ -8,7 +8,7 @@ using TeamsLogger.Models;
 
 namespace TeamsLogger
 {
-    public class TeamsLogger
+    public class Logger : ILogger
     {
         private readonly ITeamsWebhookClient _webhookClient;
         private readonly LoggerConfiguration _loggerConfiguration;
@@ -19,7 +19,7 @@ namespace TeamsLogger
         private bool _hasException;
         private bool _hasWarning;
 
-        public TeamsLogger(ITeamsWebhookClient webhookClient, LoggerConfiguration loggerConfiguration, string moduleName)
+        public Logger(ITeamsWebhookClient webhookClient, LoggerConfiguration loggerConfiguration, string moduleName)
         {
             _webhookClient = webhookClient;
             _loggerConfiguration = loggerConfiguration;
