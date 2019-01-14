@@ -25,7 +25,7 @@ builder.Register(ctx =>
 	webhookClient,
         new LoggerConfiguration { AutomaticallySetColor = true },
         "Module Name");
-}).AsSelf().SingleInstance();
+}).As<ILogger>().SingleInstance();
 
 logger.LogMessage(LogSeverity.Info, "This is a simple log");
 ```
